@@ -21,9 +21,12 @@ export const multiViewController = async (req, res) => {
     }
   } catch (error) {
     console.log("Error in multi view controller: ", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while processing the request.",
+      error: error.message,
+    });
   } finally {
     console.log("Multi view controller executed");
   }
 };
-
-// multiViewController();
