@@ -6,9 +6,8 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const deleteLocalFile = (filename) => {
-  const filePath = path.join(__dirname, "../uploads", filename);
-  fs.unlink(filePath, (err) => {
+export const deleteLocalFile = (filepath) => {
+  fs.unlink(filepath, (err) => {
     if (err) console.error("Failed to delete local file:", err);
   });
 };
