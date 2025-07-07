@@ -80,12 +80,47 @@ export const loginUserController = async (req, res) => {
       message: "Login successfully",
       accessToken: token,
     });
-    
   } catch (error) {
     console.error("Error in user login:", error);
     return res.status(500).send({
       success: false,
       message: `${error.message}`,
+    });
+  }
+};
+
+export const deleteUserController = async (req, res) => {
+  try {
+    const { _id } = req.body;
+    console.log("Delete Request _id:", _id);
+
+    if (!_id) {
+      return res.status(400).send({
+        success: false,
+        message: "id not found or required",
+      });
+    }
+
+    const user = await UserModel.findByIdAndDelete(_id);
+    console.log("Deleted User data:", user);
+
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).send({
+      success: true,
+      message: "User deleted successfully",
+      data: user,
+    });
+  } catch (error) {
+    console.error("Error while deleting user in database:", error);
+    return res.status(500).send({
+      success: false,
+      message: error.message,
     });
   }
 };
