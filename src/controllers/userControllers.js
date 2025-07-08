@@ -121,3 +121,52 @@ export const deleteUserController = async (req, res) => {
     });
   }
 };
+
+export const updateUserController = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { name, password } = req.body;
+
+    if (!id) {
+      return res.status(400).send({
+        success: false,
+        message: "Id required",
+      });
+    }
+
+    const user = await UserModel.findById(id);
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: "User not found",
+      });
+    }
+    const updatedData = {};
+    if (name) {
+      updatedData.name = name;
+    }
+    if (password) {
+      updatedData.password = await bcrypt.hash(password, 10);
+    }
+
+    const updated = await UserModel.findByIdAndUpdate(id, updatedData);
+
+    if (!updated) {
+      return res.status(400).send({
+        success: false,
+        message: "Error in updating",
+      });
+    }
+
+    return res.status(200).send({
+      success: true,
+      message: "User Data successfully updated",
+      data: user,
+    });
+  } catch (err) {
+    return res.status(500).send({
+      success: false,
+      message: err.message,
+    });
+  }
+};
