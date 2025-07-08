@@ -19,6 +19,16 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    role: {
+      type: String,
+      enum: ["admin", "user"],
+      default: "user",
+    },
+    profileImg: {
+      type: String,
+      default:
+        "https://flipbook-files-collection.s3.ap-southeast-1.amazonaws.com/pdfs/User_Profile_Image-removebg-preview.png",
+    },
   },
   { timestamps: true }
 );
