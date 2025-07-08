@@ -91,18 +91,16 @@ export const loginUserController = async (req, res) => {
 
 export const deleteUserController = async (req, res) => {
   try {
-    const { _id } = req.body;
-    console.log("Delete Request _id:", _id);
+    const id = req.params.id;
 
-    if (!_id) {
+    if (!id) {
       return res.status(400).send({
         success: false,
         message: "id not found or required",
       });
     }
 
-    const user = await UserModel.findByIdAndDelete(_id);
-    console.log("Deleted User data:", user);
+    const user = await UserModel.findByIdAndDelete(id);
 
     if (!user) {
       return res.status(404).send({
@@ -117,7 +115,6 @@ export const deleteUserController = async (req, res) => {
       data: user,
     });
   } catch (error) {
-    console.error("Error while deleting user in database:", error);
     return res.status(500).send({
       success: false,
       message: error.message,

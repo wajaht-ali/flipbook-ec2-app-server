@@ -11,6 +11,6 @@ router.post("/register", registerUserController);
 
 router.post("/login", loginUserController);
 
-router.delete("/delete", deleteUserController);
+router.delete("/delete/:id", deleteUserController);
 
 export { router as userRoute };
