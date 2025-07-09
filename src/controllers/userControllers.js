@@ -125,9 +125,11 @@ export const deleteUserController = async (req, res) => {
 export const updateUserController = async (req, res) => {
   try {
     const id = req.params.id;
-    const { name, password } = req.body;
+    const file=req.file;
+    console.log("Img file:",file)
+    const { name, password, role } = req.body;
 
-    if (!id) {
+    if (!id) {  
       return res.status(400).send({
         success: false,
         message: "Id required",
@@ -148,8 +150,12 @@ export const updateUserController = async (req, res) => {
     if (password) {
       updatedData.password = await bcrypt.hash(password, 10);
     }
+    if (role) {
+      updatedData.role = role;
+    }
 
-    const updated = await UserModel.findByIdAndUpdate(id, updatedData);
+   
+    const updated = await UserModel.findByIdAndUpdate(id, updatedData,{new:true});
 
     if (!updated) {
       return res.status(400).send({
@@ -161,7 +167,7 @@ export const updateUserController = async (req, res) => {
     return res.status(200).send({
       success: true,
       message: "User Data successfully updated",
-      data: user,
+      data: updated,
     });
   } catch (err) {
     return res.status(500).send({

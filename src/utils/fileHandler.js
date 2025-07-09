@@ -27,3 +27,19 @@ export const upload = multer({
     else cb(new Error("Only PDFs are allowed"), false);
   },
 });
+
+export const uploadImg = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    if (
+      file.mimetype === "image/png" ||
+      file.mimetype === "image/jpeg" ||
+      file.mimetype === "image/jpg"
+    ) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only PNG, JPEG or JPG files are allowed"), false);
+    }
+  },
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
