@@ -2,6 +2,9 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import config from "../config/config.js";
 import UserModel from "../model/userModel.js";
+import fs from "fs";
+import s3 from "../config/s3.js";
+import { deleteLocalFile } from "../utils/fileHandler.js";
 
 export const registerUserController = async (req, res) => {
   try {
@@ -125,11 +128,11 @@ export const deleteUserController = async (req, res) => {
 export const updateUserController = async (req, res) => {
   try {
     const id = req.params.id;
-    const file=req.file;
-    console.log("Img file:",file)
+    const file = req.file;
+    console.log("File: ", file);
     const { name, password, role } = req.body;
 
-    if (!id) {  
+    if (!id) {
       return res.status(400).send({
         success: false,
         message: "Id required",
@@ -154,8 +157,26 @@ export const updateUserController = async (req, res) => {
       updatedData.role = role;
     }
 
-   
-    const updated = await UserModel.findByIdAndUpdate(id, updatedData,{new:true});
+    if (file) {
+      const fileStream = fs.createReadStream(file.path);
+
+      const params = {
+        Bucket: config.AWS_BUCKET_NAME,
+        Key: `images/${file.originalname}-${Date.now()}`,
+        Body: fileStream,
+        ContentType: file.mimetype,
+      };
+
+      const data = await s3.upload(params).promise();
+      if (data) {
+        updatedData.profileImg = data.Location;
+      }
+      deleteLocalFile(file.path);
+    }
+
+    const updated = await UserModel.findByIdAndUpdate(id, updatedData, {
+      new: true,
+    });
 
     if (!updated) {
       return res.status(400).send({
@@ -167,7 +188,7 @@ export const updateUserController = async (req, res) => {
     return res.status(200).send({
       success: true,
       message: "User Data successfully updated",
-      data: updated,
+      data: updated.select("-password"),
     });
   } catch (err) {
     return res.status(500).send({

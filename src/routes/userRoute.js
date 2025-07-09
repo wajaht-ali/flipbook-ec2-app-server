@@ -15,6 +15,6 @@ router.post("/login", loginUserController);
 
 router.delete("/delete/:id", deleteUserController);
 
-router.put("/update-user/:id",uploadImg.single("img"), updateUserController);
+router.put("/update-user/:id", uploadImg.single("img"), updateUserController);
 
 export { router as userRoute };
