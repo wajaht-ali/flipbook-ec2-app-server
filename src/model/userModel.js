@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema(
     profileImg: {
       type: String,
       default:
-        "https://flipbook-files-collection.s3.ap-southeast-1.amazonaws.com/pdfs/User_Profile_Image-removebg-preview.png",
+        "https://flipbook-files-collection.s3.ap-southeast-1.amazonaws.com/images/User_dummy_profile_img.png",
     },
   },
   { timestamps: true }

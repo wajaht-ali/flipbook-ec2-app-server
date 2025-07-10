@@ -188,12 +188,58 @@ export const updateUserController = async (req, res) => {
     return res.status(200).send({
       success: true,
       message: "User Data successfully updated",
-      data: updated.select("-password"),
+      data: updated,
     });
   } catch (err) {
     return res.status(500).send({
       success: false,
       message: err.message,
+    });
+  }
+};
+
+export const removeProfileImg = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    if (!id) {
+      return res.status(400).send({
+        success: false,
+        message: "User ID is required",
+      });
+    }
+
+    const user = await UserModel.findById(id);
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (!user.profileImg) {
+      return res.status(404).send({
+        success: false,
+        message: "Profile Img not found",
+      });
+    }
+
+    const imgPath = user.profileImg;
+
+    const updatedUser = await UserModel.findByIdAndUpdate(id, {
+      profileImg:
+        "https://flipbook-files-collection.s3.ap-southeast-1.amazonaws.com/images/User_dummy_profile_img.png",
+    });
+
+    return res.status(200).send({
+      success: true,
+      message: "Profile image removed successfully",
+      data: updatedUser,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      success: false,
+      message: error.message,
     });
   }
 };
