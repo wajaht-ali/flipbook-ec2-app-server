@@ -1,10 +1,13 @@
 import express from "express";
 import {
+  allUsersController,
   deleteUserController,
   loginUserController,
   registerUserController,
-  removeProfileImg,
+  removeImgController,
+  singleUserController,
   updateUserController,
+  usersCountController,
 } from "../controllers/userControllers.js";
 import { uploadImg } from "../utils/fileHandler.js";
 
@@ -18,7 +21,12 @@ router.delete("/delete/:id", deleteUserController);
 
 router.put("/update-user/:id", uploadImg.single("img"), updateUserController);
 
+router.delete("/remove-profile-img/:id", removeImgController);
 
-router.delete("/remove-profileImage/:id", removeProfileImg);
+router.get("/all-users", allUsersController);
+
+router.get("/total-users", usersCountController);
+
+router.get("/get-user/:id", singleUserController);
 
 export { router as userRoute };

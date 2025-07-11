@@ -198,7 +198,7 @@ export const updateUserController = async (req, res) => {
   }
 };
 
-export const removeProfileImg = async (req, res) => {
+export const removeImgController = async (req, res) => {
   try {
     const id = req.params.id;
 
@@ -240,6 +240,74 @@ export const removeProfileImg = async (req, res) => {
     return res.status(500).send({
       success: false,
       message: error.message,
+    });
+  }
+};
+
+export const allUsersController = async (req, res) => {
+  try {
+    const users = await UserModel.find().select("-password");
+    const TotalUsers = users.length;
+
+    return res.status(200).send({
+      success: true,
+      message: "All Users Fetched",
+      users,
+      TotalUsers,
+    });
+  } catch (err) {
+    return res.status(500).send({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+export const usersCountController = async (req, res) => {
+  try {
+    const users = await UserModel.find().select("-password");
+    const TotalUsers = await users.length;
+
+    return res.status(200).send({
+      success: true,
+      message: "Total Users",
+      TotalUsers,
+    });
+  } catch (err) {
+    return res.status(500).send({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+export const singleUserController = async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!id) {
+      return res.status(404).send({
+        success: false,
+        message: "Id is required",
+      });
+    }
+
+    const user = await UserModel.findById(id).select("-password");
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "No User Found",
+      });
+    }
+
+    return res.status(200).send({
+      success: true,
+      message: "User Found",
+      user,
+    });
+  } catch (err) {
+    return res.status(404).send({
+      success: false,
+      message: err.message,
     });
   }
 };
