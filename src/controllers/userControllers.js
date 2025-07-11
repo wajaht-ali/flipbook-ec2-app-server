@@ -129,7 +129,6 @@ export const updateUserController = async (req, res) => {
   try {
     const id = req.params.id;
     const file = req.file;
-    console.log("File: ", file);
     const { name, password, role } = req.body;
 
     if (!id) {
