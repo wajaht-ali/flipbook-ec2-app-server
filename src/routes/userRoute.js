@@ -21,7 +21,7 @@ router.delete("/delete/:id", deleteUserController);
 
 router.put("/update-user/:id", uploadImg.single("img"), updateUserController);
 
-router.delete("/remove-profile-img/:id", removeImgController);
+router.put("/remove-profile-img/:id", removeImgController);
 
 router.get("/all-users", allUsersController);
 
