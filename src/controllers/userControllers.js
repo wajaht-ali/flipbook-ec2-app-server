@@ -42,12 +42,10 @@ export const registerUserController = async (req, res) => {
     });
 
     let html_Email = generateEmailTemplate(name);
-    console.log(html_Email);
     if (newUser) {
       sendMail(email, `Welcome ${name} to our product`, html_Email);
     }
   } catch (error) {
-    console.error("Error in user sign up:", error);
     return res.status(400).send({
       success: false,
       msg: `Error with user sign up ${error}`,
@@ -92,7 +90,7 @@ export const loginUserController = async (req, res) => {
       accessToken: token,
     });
   } catch (error) {
-    console.error("Error in user login:", error);
+
     return res.status(500).send({
       success: false,
       message: `${error.message}`,
