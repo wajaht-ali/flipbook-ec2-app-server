@@ -5,6 +5,8 @@ import UserModel from "../model/userModel.js";
 import fs from "fs";
 import s3 from "../config/s3.js";
 import { deleteLocalFile } from "../utils/fileHandler.js";
+import sendMail from "../utils/sendEmail.js";
+import { generateEmailTemplate } from "../utils/emailTemplete.js";
 
 export const registerUserController = async (req, res) => {
   try {
@@ -38,8 +40,12 @@ export const registerUserController = async (req, res) => {
       msg: "Sign up successfully!",
       user: newUser,
     });
+
+    let html_Email = generateEmailTemplate(name);
+    if (newUser) {
+      sendMail(email, `Welcome ${name} to our product`, html_Email);
+    }
   } catch (error) {
-    console.error("Error in user sign up:", error);
     return res.status(400).send({
       success: false,
       msg: `Error with user sign up ${error}`,
@@ -84,7 +90,7 @@ export const loginUserController = async (req, res) => {
       accessToken: token,
     });
   } catch (error) {
-    console.error("Error in user login:", error);
+
     return res.status(500).send({
       success: false,
       message: `${error.message}`,
@@ -216,19 +222,14 @@ export const removeImgController = async (req, res) => {
       });
     }
 
-    if (!user.profileImg) {
-      return res.status(404).send({
-        success: false,
-        message: "Profile Img not found",
-      });
-    }
-
-    const imgPath = user.profileImg;
-
-    const updatedUser = await UserModel.findByIdAndUpdate(id, {
-      profileImg:
-        "https://flipbook-files-collection.s3.ap-southeast-1.amazonaws.com/images/User_dummy_profile_img.png",
-    });
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      id,
+      {
+        profileImg:
+          "https://flipbook-files-collection.s3.ap-southeast-1.amazonaws.com/images/User_dummy_profile_img.png",
+      },
+      { new: true }
+    );
 
     return res.status(200).send({
       success: true,

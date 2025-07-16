@@ -11,7 +11,9 @@ const _config = {
   AWS_REGION: process.env.AWS_REGION,
   AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
   API_TOKEN: process.env.API_TOKEN,
-  MONGO_DB_URI: process.env.MONGO_DB_URI
+  MONGO_DB_URI: process.env.MONGO_DB_URI,
+  AUTHOR_EMAIL: process.env.AUTHOR_EMAIL,
+  AUTHOR_PASSWORD: process.env.AUTHOR_PASSWORD,
 };
 
 const config = Object.freeze(_config);
