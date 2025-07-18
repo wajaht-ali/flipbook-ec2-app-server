@@ -1,38 +1,38 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
+import { sequelize } from "../config/db.js";
 
-const userSchema = new mongoose.Schema(
+const UserModel = sequelize.define(
+  "users",
   {
     name: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     email: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING,
       unique: true,
-      lowercase: true,
+      allowNull: false,
     },
     password: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     role: {
-      type: String,
-      enum: ["admin", "user"],
-      default: "user",
+      type: DataTypes.ENUM("admin", "user"),
+      defaultValue: "user",
+      allowNull: false,
     },
     profileImg: {
-      type: String,
-      default:
+      type: DataTypes.STRING,
+      defaultValue:
         "https://flipbook-files-collection.s3.ap-southeast-1.amazonaws.com/images/User_dummy_profile_img.png",
     },
   },
-  { timestamps: true }
+  {
+    freezeTableName: true,
+    underscored: true,
+    timestamps: true,
+  }
 );
-
-const UserModel = mongoose.model("users", userSchema);
 
 export default UserModel;
