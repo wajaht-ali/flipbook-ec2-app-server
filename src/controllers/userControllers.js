@@ -8,6 +8,7 @@ import { deleteLocalFile } from "../utils/fileHandler.js";
 import sendMail from "../utils/sendEmail.js";
 import { generateEmailTemplate } from "../utils/emailTemplete.js";
 
+
 export const registerUserController = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -19,7 +20,7 @@ export const registerUserController = async (req, res) => {
       });
     }
 
-    const user = await UserModel.findOne({ email: email });
+    const user = await UserModel.findOne({ where: { email } });
     if (user) {
       return res.status(400).send({
         success: false,
@@ -42,6 +43,7 @@ export const registerUserController = async (req, res) => {
     });
 
     let html_Email = generateEmailTemplate(name);
+
     if (newUser) {
       sendMail(email, `Welcome ${name} to our product`, html_Email);
     }
@@ -63,7 +65,7 @@ export const loginUserController = async (req, res) => {
       });
     }
 
-    const user = await UserModel.findOne({ email });
+    const user = await UserModel.findOne({ where: { email } });
     if (!user) {
       return res.status(404).send({
         success: false,
@@ -90,7 +92,6 @@ export const loginUserController = async (req, res) => {
       accessToken: token,
     });
   } catch (error) {
-
     return res.status(500).send({
       success: false,
       message: `${error.message}`,
@@ -105,11 +106,11 @@ export const deleteUserController = async (req, res) => {
     if (!id) {
       return res.status(400).send({
         success: false,
-        message: "id not found or required",
+        message: "Id not found",
       });
     }
 
-    const user = await UserModel.findByIdAndDelete(id);
+    const user = await UserModel.findByPk(id);
 
     if (!user) {
       return res.status(404).send({
@@ -118,10 +119,11 @@ export const deleteUserController = async (req, res) => {
       });
     }
 
+    await user.destroy();
+
     return res.status(200).send({
       success: true,
       message: "User deleted successfully",
-      data: user,
     });
   } catch (error) {
     return res.status(500).send({
@@ -144,7 +146,7 @@ export const updateUserController = async (req, res) => {
       });
     }
 
-    const user = await UserModel.findById(id);
+    const user = await UserModel.findByPk(id);
     if (!user) {
       return res.status(400).send({
         success: false,
@@ -179,11 +181,9 @@ export const updateUserController = async (req, res) => {
       deleteLocalFile(file.path);
     }
 
-    const updated = await UserModel.findByIdAndUpdate(id, updatedData, {
-      new: true,
-    });
+    await user.update(updatedData);
 
-    if (!updated) {
+    if (!updatedData) {
       return res.status(400).send({
         success: false,
         message: "Error in updating",
@@ -193,7 +193,7 @@ export const updateUserController = async (req, res) => {
     return res.status(200).send({
       success: true,
       message: "User Data successfully updated",
-      data: updated,
+      data: updatedData,
     });
   } catch (err) {
     return res.status(500).send({

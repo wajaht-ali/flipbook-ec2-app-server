@@ -1,21 +1,30 @@
-import mongoose from "mongoose";
+import { Sequelize } from "sequelize";
 import config from "./config.js";
 
-const connectDB = async () => {
+const sequelize = new Sequelize(
+  `${config.DB_NAME}`,
+  `${config.DB_USER}`,
+  `${config.DB_PASSWORD}`,
+  {
+    host: `${config.DB_HOST}`,
+    dialect: "postgres",
+    logging: false,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
+  }
+);
+
+const dbConnection = async () => {
   try {
-    mongoose.connection.on("connected", () => {
-      console.log("💹 Database connected!");
-    });
-
-    mongoose.connection.on("error", (err) => {
-      console.log("Error with connecting database! ", err);
-    });
-
-    await mongoose.connect(config.MONGO_DB_URI);
+    await sequelize.authenticate();
+    console.log("✅ Connected to PostgreSQL");
   } catch (error) {
-    console.log("Failed to connect to database: ", error);
-    process.exit();
+    console.error("❌ Connection error:", error);
   }
 };
 
-export default connectDB;
+export { sequelize, dbConnection };

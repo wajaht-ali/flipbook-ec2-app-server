@@ -14,6 +14,11 @@ const _config = {
   MONGO_DB_URI: process.env.MONGO_DB_URI,
   AUTHOR_EMAIL: process.env.AUTHOR_EMAIL,
   AUTHOR_PASSWORD: process.env.AUTHOR_PASSWORD,
+  
+  DB_HOST: process.env.DB_HOST,
+  DB_NAME: process.env.DB_NAME,
+  DB_PASSWORD: process.env.DB_PASSWORD,
+  DB_USER: process.env.DB_USER,
 };
 
 const config = Object.freeze(_config);
