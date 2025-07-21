@@ -3,6 +3,7 @@ import {
   allUsersController,
   deleteUserController,
   loginUserController,
+  passwordResetRequestController,
   registerUserController,
   removeImgController,
   singleUserController,
@@ -28,5 +29,7 @@ router.get("/all-users", allUsersController);
 router.get("/total-users", usersCountController);
 
 router.get("/get-user/:id", singleUserController);
+
+router.post("/password-request-reset", passwordResetRequestController);
 
 export { router as userRoute };

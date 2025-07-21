@@ -7,7 +7,8 @@ import s3 from "../config/s3.js";
 import { deleteLocalFile } from "../utils/fileHandler.js";
 import sendMail from "../utils/sendEmail.js";
 import { generateEmailTemplate } from "../utils/emailTemplete.js";
-
+import PasswordResetModel from "../model/passwordResetModel.js";
+import { generateOTPTemplate } from "../utils/passwordResetTemplete.js";
 
 export const registerUserController = async (req, res) => {
   try {
@@ -214,7 +215,7 @@ export const removeImgController = async (req, res) => {
       });
     }
 
-    const user = await UserModel.findById(id);
+    const user = await UserModel.findByPk(id);
     if (!user) {
       return res.status(404).send({
         success: false,
@@ -222,14 +223,10 @@ export const removeImgController = async (req, res) => {
       });
     }
 
-    const updatedUser = await UserModel.findByIdAndUpdate(
-      id,
-      {
-        profileImg:
-          "https://flipbook-files-collection.s3.ap-southeast-1.amazonaws.com/images/User_dummy_profile_img.png",
-      },
-      { new: true }
-    );
+    const updatedUser = await user.update({
+      profileImg:
+        "https://flipbook-files-collection.s3.ap-southeast-1.amazonaws.com/images/User_dummy_profile_img.png",
+    });
 
     return res.status(200).send({
       success: true,
@@ -246,7 +243,10 @@ export const removeImgController = async (req, res) => {
 
 export const allUsersController = async (req, res) => {
   try {
-    const users = await UserModel.find().select("-password");
+    const users = await UserModel.findAll({
+      attributes: { exclude: ["password"] },
+    });
+
     const TotalUsers = users.length;
 
     return res.status(200).send({
@@ -265,8 +265,8 @@ export const allUsersController = async (req, res) => {
 
 export const usersCountController = async (req, res) => {
   try {
-    const users = await UserModel.find().select("-password");
-    const TotalUsers = await users.length;
+    const users = await UserModel.findAll();
+    const TotalUsers = users.length;
 
     return res.status(200).send({
       success: true,
@@ -291,7 +291,13 @@ export const singleUserController = async (req, res) => {
       });
     }
 
-    const user = await UserModel.findById(id).select("-password");
+    const user = await UserModel.findOne(
+      { where: { id } },
+      {
+        attributes: { exclude: ["password"] },
+      }
+    );
+
     if (!user) {
       return res.status(404).send({
         success: false,
@@ -309,5 +315,36 @@ export const singleUserController = async (req, res) => {
       success: false,
       message: err.message,
     });
+  }
+};
+
+export const passwordResetRequestController = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await UserModel.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
+    await PasswordResetModel.create({
+      userId: user.id,
+      otp,
+      expiresAt,
+    });
+
+    let html_OTP = generateOTPTemplate(user.name,otp);
+
+    await sendMail(email, `Flipbook Reset Password Request`, html_OTP);
+    return res.status(200).json({ message: "OTP sent to your email." });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Internal server error." });
   }
 };
