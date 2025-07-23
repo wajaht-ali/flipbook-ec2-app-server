@@ -7,7 +7,7 @@ const startServer = async () => {
   const PORT = config.PORT || 8080;
 
   await sequelize
-    .sync()
+    .sync({ alter: true })
     .then(() => console.log("✅ Database connected!"))
     .catch((err) => console.error("❌ Sync error", err));
 
