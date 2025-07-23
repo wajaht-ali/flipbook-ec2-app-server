@@ -318,33 +318,102 @@ export const singleUserController = async (req, res) => {
   }
 };
 
-export const passwordResetRequestController = async (req, res) => {
+export const passwordResetController = async (req, res) => {
   try {
     const { email } = req.body;
     const user = await UserModel.findOne({ where: { email } });
 
     if (!user) {
-      return res.status(404).send({
-        success: false,
-        message: "User not found",
-      });
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    let condition = await PasswordResetModel.findOne({
+      where: { userId: user.id },
+    });
+
+    if (condition) {
+      await PasswordResetModel.destroy({ where: { userId: user.id } });
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
-    await PasswordResetModel.create({
-      userId: user.id,
-      otp,
-      expiresAt,
-    });
+    await PasswordResetModel.create({ otp, expiresAt, userId: user.id });
 
-    let html_OTP = generateOTPTemplate(user.name,otp);
+    const html_OTP = generateOTPTemplate(user.name, otp);
+    await sendMail(user.email, "Flipbook Reset Password", html_OTP);
 
-    await sendMail(email, `Flipbook Reset Password Request`, html_OTP);
     return res.status(200).json({ message: "OTP sent to your email." });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+export const verifyOtpController = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    const user = await UserModel.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const record = await PasswordResetModel.findOne({
+      where: { userId: user.id },
+    });
+
+    const now = new Date();
+    if (now > record.expiresAt) {
+      return res.status(400).send({ success: false, message: "Incorrect OTP" });
+    }
+
+    if (otp !== record.otp) {
+      return res.status(400).send({ success: false, message: "Incorrect OTP" });
+    }
+
+    return res.status(200).json({ message: "OTP Match." });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+export const changePasswordController = async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+
+    const user = await UserModel.findOne({ where: { email } });
+     if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found",
+      });
+    }
+    
+    if (!newPassword) {
+      return res.status(400).send({
+        success: false,
+        message: "Password is required",
+      });
+    }
+   
+    const updatedData = {};
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    if (newPassword) {
+      updatedData.password = hashedPassword;
+    }
+    await user.update(updatedData);
+
+    return res.status(200).send({
+      success: true,
+      message: "Password updated successfully",
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send({
+      success: false,
+      message: "Internal Server Error",
+    });
   }
 };

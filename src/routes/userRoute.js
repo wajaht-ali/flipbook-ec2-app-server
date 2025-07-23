@@ -1,14 +1,16 @@
 import express from "express";
 import {
   allUsersController,
+  changePasswordController,
   deleteUserController,
   loginUserController,
-  passwordResetRequestController,
+  passwordResetController,
   registerUserController,
   removeImgController,
   singleUserController,
   updateUserController,
   usersCountController,
+  verifyOtpController,
 } from "../controllers/userControllers.js";
 import { uploadImg } from "../utils/fileHandler.js";
 
@@ -30,6 +32,10 @@ router.get("/total-users", usersCountController);
 
 router.get("/get-user/:id", singleUserController);
 
-router.post("/password-request-reset", passwordResetRequestController);
+router.post("/password-reset", passwordResetController);
+
+router.post("/verify-otp", verifyOtpController);
+
+router.put("/change-password", changePasswordController)
 
 export { router as userRoute };

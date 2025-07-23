@@ -13,10 +13,6 @@ const PasswordResetModel = sequelize.define(
       type: DataTypes.DATE,
       allowNull: false,
     },
-    used: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
