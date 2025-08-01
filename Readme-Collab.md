@@ -1,2 +1,0 @@
-Usman Kashif
-Wajahat Ali

@@ -42,8 +42,8 @@ app.get("/", (req, res) => {
     message: "Home route is working!!!",
   });
 });
-app.use("/api/v1/upload", uploadFilesToS3Route);
 
+app.use("/api/v1/upload", uploadFilesToS3Route);
 app.use("/api/v1/replicate", replicateRoute);
 app.use("/api/v1/user", userRoute);
 
