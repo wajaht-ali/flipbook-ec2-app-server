@@ -1,9 +1,13 @@
 import express from "express";
 import {
   allUsersController,
+  authGoogleCallBackController,
+  authGoogleController,
   changePasswordController,
+  dashboardController,
   deleteUserController,
   loginUserController,
+  logoutController,
   passwordResetController,
   registerUserController,
   removeImgController,
@@ -36,6 +40,14 @@ router.post("/password-reset", passwordResetController);
 
 router.post("/verify-otp", verifyOtpController);
 
-router.put("/change-password", changePasswordController)
+router.put("/change-password", changePasswordController);
+
+router.get("/google", authGoogleController);
+
+router.get("/google/callback", authGoogleCallBackController);
+
+router.get("/dashboard", dashboardController);
+
+router.get("/logout", logoutController);
 
 export { router as userRoute };

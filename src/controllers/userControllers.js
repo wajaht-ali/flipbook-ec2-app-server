@@ -7,8 +7,8 @@ import s3 from "../config/s3.js";
 import { deleteLocalFile } from "../utils/fileHandler.js";
 import sendMail from "../utils/sendEmail.js";
 import { generateEmailTemplate } from "../utils/emailTemplete.js";
-import PasswordResetModel from "../model/passwordResetModel.js";
 import { generateOTPTemplate } from "../utils/passwordResetTemplete.js";
+import passport from "passport";
 
 export const registerUserController = async (req, res) => {
   try {
@@ -119,8 +119,13 @@ export const deleteUserController = async (req, res) => {
         message: "User not found",
       });
     }
-
     await user.destroy();
+
+    res.clearCookie("connect.sid", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
 
     return res.status(200).send({
       success: true,
@@ -327,18 +332,10 @@ export const passwordResetController = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    let condition = await PasswordResetModel.findOne({
-      where: { userId: user.id },
-    });
-
-    if (condition) {
-      await PasswordResetModel.destroy({ where: { userId: user.id } });
-    }
-
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+    const otpExpiry = new Date(Date.now() + 5 * 60 * 1000);
 
-    await PasswordResetModel.create({ otp, expiresAt, userId: user.id });
+    await UserModel.update({ otp, otpExpiry }, { where: { id: user.id } });
 
     const html_OTP = generateOTPTemplate(user.name, otp);
     await sendMail(user.email, "Flipbook Reset Password", html_OTP);
@@ -359,16 +356,12 @@ export const verifyOtpController = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const record = await PasswordResetModel.findOne({
-      where: { userId: user.id },
-    });
-
     const now = new Date();
-    if (now > record.expiresAt) {
+    if (now > user.otpExpiry) {
       return res.status(400).send({ success: false, message: "Incorrect OTP" });
     }
 
-    if (otp !== record.otp) {
+    if (otp !== user.otp) {
       return res.status(400).send({ success: false, message: "Incorrect OTP" });
     }
 
@@ -384,26 +377,27 @@ export const changePasswordController = async (req, res) => {
     const { email, newPassword } = req.body;
 
     const user = await UserModel.findOne({ where: { email } });
-     if (!user) {
+    if (!user) {
       return res.status(404).send({
         success: false,
         message: "User not found",
       });
     }
-    
+
     if (!newPassword) {
       return res.status(400).send({
         success: false,
         message: "Password is required",
       });
     }
-   
+
     const updatedData = {};
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     if (newPassword) {
       updatedData.password = hashedPassword;
     }
-    await user.update(updatedData);
+
+    await UserModel.update({ ...updatedData }, { where: { id: user.id } });
 
     return res.status(200).send({
       success: true,
@@ -416,4 +410,54 @@ export const changePasswordController = async (req, res) => {
       message: "Internal Server Error",
     });
   }
+};
+
+export const authGoogleController = (req, res, next) => {
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+  })(req, res, next);
+};
+
+export const authGoogleCallBackController = (req, res, next) => {
+  passport.authenticate("google", {
+    successRedirect: "http://localhost:8000/api/v1/user/dashboard",
+    failureRedirect: "http://localhost:8000/api/v1/user/login",
+  })(req, res, next);
+};
+
+export const dashboardController = (req, res, next) => {
+  try {
+    if (!req.isAuthenticated() || !req.user) {
+      return res.status(401).send({
+        success: false,
+        message: "Unauthorized. Please log in.",
+      });
+    }
+
+    const { name, email } = req.user;
+
+    res.send(`ٖ<html>
+      <head><title>Dashboard</title></head>
+      <body>
+        <h1>Welcome, ${name}!</h1>
+        <p>Email: ${email}</p>
+        <a href="/api/v1/user/logout">Logout</a>
+      </body>
+    </html>
+  `);
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: `${error}`,
+    });
+  }
+};
+
+export const logoutController = (req, res, next) => {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
+  });
 };

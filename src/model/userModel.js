@@ -15,7 +15,12 @@ const UserModel = sequelize.define(
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
+    },
+    googleId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
     },
     role: {
       type: DataTypes.ENUM("admin", "user"),
@@ -26,6 +31,15 @@ const UserModel = sequelize.define(
       type: DataTypes.STRING,
       defaultValue:
         "https://flipbook-files-collection.s3.ap-southeast-1.amazonaws.com/images/User_dummy_profile_img.png",
+    },
+
+    otp: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    otpExpiry: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
   },
   {

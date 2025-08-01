@@ -14,11 +14,16 @@ const _config = {
   MONGO_DB_URI: process.env.MONGO_DB_URI,
   AUTHOR_EMAIL: process.env.AUTHOR_EMAIL,
   AUTHOR_PASSWORD: process.env.AUTHOR_PASSWORD,
-  
+
   DB_HOST: process.env.DB_HOST,
   DB_NAME: process.env.DB_NAME,
   DB_PASSWORD: process.env.DB_PASSWORD,
   DB_USER: process.env.DB_USER,
+
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+  GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL,
+  SESSION_SECRET: process.env.SESSION_SECRET,
 };
 
 const config = Object.freeze(_config);
