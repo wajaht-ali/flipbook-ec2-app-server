@@ -384,20 +384,18 @@ export const changePasswordController = async (req, res) => {
     const { email, newPassword } = req.body;
 
     const user = await UserModel.findOne({ where: { email } });
-     if (!user) {
+    if (!user) {
       return res.status(404).send({
         success: false,
         message: "User not found",
       });
     }
-    
     if (!newPassword) {
       return res.status(400).send({
         success: false,
         message: "Password is required",
       });
     }
-   
     const updatedData = {};
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     if (newPassword) {

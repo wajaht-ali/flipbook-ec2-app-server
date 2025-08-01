@@ -36,6 +36,6 @@ router.post("/password-reset", passwordResetController);
 
 router.post("/verify-otp", verifyOtpController);
 
-router.put("/change-password", changePasswordController)
+router.put("/change-password", changePasswordController);
 
 export { router as userRoute };
