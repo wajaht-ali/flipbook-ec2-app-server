@@ -25,7 +25,7 @@ const UserModel = sequelize.define(
     role: {
       type: DataTypes.ENUM("admin", "user"),
       defaultValue: "user",
-      allowNull: false,
+      allowNull: true,
     },
     profileImg: {
       type: DataTypes.STRING,
