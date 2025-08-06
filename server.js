@@ -6,11 +6,13 @@ const startServer = async () => {
   await dbConnection();
   const PORT = config.PORT || 8080;
 
-  await sequelize
-    .sync({ alter: true })
-    .then(() => console.log("✅ Database connected!"))
-    .catch((err) => console.error("❌ Sync error", err));
-
+  try {
+    await sequelize.authenticate();
+    console.log("✅Database connected!");
+  } catch (err) {
+    console.error("❌Connection error", err);
+  }
+  
   app.listen(PORT, () => {
     console.log(`🔥 Server is running on http://localhost:${PORT}`);
   });
