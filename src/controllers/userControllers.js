@@ -82,7 +82,7 @@ export const loginUserController = async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ sub: user._id }, config.JWT_SECRET_KEY, {
+    const token = jwt.sign({ id: user.id }, config.JWT_SECRET_KEY, {
       expiresIn: config.JWT_EXPIRY,
       algorithm: "HS256",
     });
