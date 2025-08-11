@@ -17,6 +17,7 @@ import {
   verifyOtpController,
 } from "../controllers/userControllers.js";
 import { uploadImg } from "../utils/fileHandler.js";
+import { isAdmin, isLoggedIn } from "../Middleware/authMIddleware.js";
 
 const router = express.Router();
 
@@ -49,5 +50,13 @@ router.get("/google/callback", authGoogleCallBackController);
 router.get("/dashboard", dashboardController);
 
 router.get("/logout", logoutController);
+
+router.get("/user-auth", isLoggedIn, (req, res) => {
+  res.status(200).send({ ok: true });
+});
+
+router.get("/admin-auth", isLoggedIn, isAdmin, (req, res) => {
+  res.status(200).send({ ok: true });
+});
 
 export { router as userRoute };

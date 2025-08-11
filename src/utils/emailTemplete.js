@@ -29,7 +29,7 @@ export const generateEmailTemplate = (name) => {
               </p>
 
               <div style="text-align: center; margin: 30px 0;">
-                <a href="https://your-app-url.com" style="background-color: #4a90e2; color: white; padding: 12px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;">Go to Flipbook</a>
+                <a href="https://flipbook-client.vercel.app/" style="background-color: #4a90e2; color: white; padding: 12px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;">Go to Flipbook</a>
               </div>
 
               <p style="font-size: 14px; color: #888;">

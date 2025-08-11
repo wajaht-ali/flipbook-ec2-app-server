@@ -7,12 +7,13 @@ import config from "./config/config.js";
 import { replicateRoute } from "./routes/replicateRoute.js";
 import { uploadFilesToS3Route } from "./routes/uploadFilesToS3Route.js";
 import { userRoute } from "./routes/userRoute.js";
+import { filesRoute } from "./routes/filesRoute.js";
 
 const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:8000",
+    origin: "*",
     methods: ["GET", "POST", "DELETE", "PUT"],
     credentials: true,
   })
@@ -46,5 +47,6 @@ app.get("/", (req, res) => {
 app.use("/api/v1/upload", uploadFilesToS3Route);
 app.use("/api/v1/replicate", replicateRoute);
 app.use("/api/v1/user", userRoute);
+app.use("/api/v1/files", filesRoute);
 
 export default app;

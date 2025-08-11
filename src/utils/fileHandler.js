@@ -23,8 +23,11 @@ export const storage = multer.diskStorage({
 export const upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
-    if (file.mimetype === "application/pdf") cb(null, true);
-    else cb(new Error("Only PDFs are allowed"), false);
+    if (
+      file.mimetype === "application/pdf"
+    )
+      cb(null, true);
+    else cb(new Error("Only PDFs files are allowed"), false);
   },
 });
 
