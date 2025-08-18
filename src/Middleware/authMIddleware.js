@@ -25,7 +25,6 @@ export const isLoggedIn = async (req, res, next) => {
     }
 
     req.user = user;
-    console.log("user: ", req.user);
     await next();
   } catch (err) {
     return res.status(401).json({
