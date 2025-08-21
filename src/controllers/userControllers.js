@@ -21,6 +21,9 @@ export const registerUserController = async (req, res) => {
       });
     }
 
+    const trimEmail = email.trim();
+    const trimPassword = password.trim();
+
     const user = await UserModel.findOne({ where: { email } });
     if (user) {
       return res.status(400).send({
@@ -29,11 +32,11 @@ export const registerUserController = async (req, res) => {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(trimPassword, 10);
 
     const newUser = await UserModel.create({
       name,
-      email,
+      email: trimEmail,
       password: hashedPassword,
     });
 
