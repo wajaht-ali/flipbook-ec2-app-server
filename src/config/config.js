@@ -24,6 +24,9 @@ const _config = {
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL,
   SESSION_SECRET: process.env.SESSION_SECRET,
+
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRETE_KEY_VALUE,
+  STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY_VALUE,
 };
 
 const config = Object.freeze(_config);

@@ -8,6 +8,7 @@ import { replicateRoute } from "./routes/replicateRoute.js";
 import { uploadFilesToS3Route } from "./routes/uploadFilesToS3Route.js";
 import { userRoute } from "./routes/userRoute.js";
 import { filesRoute } from "./routes/filesRoute.js";
+import { subscriptionRoute } from "./routes/subscriptionRoute.js";
 
 const app = express();
 
@@ -48,5 +49,6 @@ app.use("/api/v1/upload", uploadFilesToS3Route);
 app.use("/api/v1/replicate", replicateRoute);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/files", filesRoute);
+app.use("/api/v1/subscription",subscriptionRoute)
 
 export default app;
