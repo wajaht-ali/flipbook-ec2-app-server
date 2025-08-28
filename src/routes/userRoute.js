@@ -12,7 +12,7 @@ import {
   registerUserController,
   removeImgController,
   singleUserController,
-  updateUserController,
+   updateUserController,
   usersCountController,
   verifyOtpController,
 } from "../controllers/userControllers.js";
@@ -59,4 +59,5 @@ router.get("/admin-auth", isLoggedIn, isAdmin, (req, res) => {
   res.status(200).send({ ok: true });
 });
 
+ 
 export { router as userRoute };

@@ -26,10 +26,12 @@ export const upload = multer({
     if (
       file.mimetype === "application/pdf" ||
       file.mimetype ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+      file.mimetype ===
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation"
     )
       cb(null, true);
-    else cb(new Error("Only PDFs and Docx files are allowed"), false);
+    else cb(new Error("Only PDFs, Docx and Pptx files are allowed"), false);
   },
 });
 

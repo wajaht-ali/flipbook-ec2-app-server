@@ -1,7 +1,7 @@
 import app from "./src/app.js";
 import config from "./src/config/config.js";
 import { dbConnection, sequelize } from "./src/config/db.js";
-
+import { syncPlansToDb } from "./src/controllers/subscriptionController.js";
 
 const startServer = async () => {
   await dbConnection();
@@ -14,6 +14,8 @@ const startServer = async () => {
     console.error("❌Connection error", err);
   }
   
+  await syncPlansToDb();
+
   app.listen(PORT, () => {
     console.log(`🔥 Server is running on http://localhost:${PORT}`);
   });
