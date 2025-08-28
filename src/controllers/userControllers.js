@@ -94,6 +94,7 @@ export const loginUserController = async (req, res) => {
       success: true,
       message: "Login successfully",
       accessToken: token,
+      userData: user,
     });
   } catch (error) {
     return res.status(500).send({

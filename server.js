@@ -13,9 +13,9 @@ const startServer = async () => {
   } catch (err) {
     console.error("❌Connection error", err);
   }
-
-  await syncPlansToDb();
   
+  await syncPlansToDb();
+
   app.listen(PORT, () => {
     console.log(`🔥 Server is running on http://localhost:${PORT}`);
   });
