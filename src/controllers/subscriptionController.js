@@ -108,10 +108,11 @@
 
 
 import Stripe from "stripe";
-import SubscriptionModel from "../model/userSubscriptionModel.js";
 import planModel from "../model/planModel.js";
 import config from "../config/config.js";
 import paymentHistory from "../model/paymentHistoryModel.js";
+import SubscriptionModel from "../model/userSubscriptionModel.js";
+import UserModel from "../model/userModel.js";
 
 const stripe = new Stripe(config.STRIPE_SECRET_KEY);
 
@@ -155,7 +156,7 @@ export const subscriptionController = async (req, res) => {
           quantity: quantity,
         },
       ],
-      success_url: successUrl,
+      success_url: `${successUrl}?priceId=${encodeURIComponent(priceId)}`,
       cancel_url: cancelUrl,
     });
 
@@ -232,3 +233,45 @@ export const verifyPayment = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+
+// Get All Subscription Details
+export const getsubcriptionDetails = async (req, resp) => {
+  try {
+    const users = await SubscriptionModel.findAll({
+      include: [{ model: UserModel, as: "user" }],
+    });
+
+    return resp.status(200).json({
+      message: "Subscriptions fetched successfully",
+      users,
+    });
+  } catch (error) {
+    console.error("Error fetching subscriptions:", error);
+    resp.status(500).json({ error: "Failed to fetch subscriptions" });
+  }
+};
+
+
+//get specific user payment details 
+export const getUserSubscriptionDetails = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ error: "Missing userId" });
+    }
+    const subscription = await paymentHistory.findAll({ where: { userId } });
+    if (!subscription) {
+      return res.status(404).json({ error: "You are on basic plan" });
+    }
+    return res.status(200).json({
+      message: "Subscription fetched successfully",
+      subscription,
+    });
+  }
+  catch (error) {
+    console.error("Error fetching user subscription:", error);
+    res.status(500).json({ error: "Failed to fetch user subscription" });
+  }
+}

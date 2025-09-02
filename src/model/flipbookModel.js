@@ -25,10 +25,14 @@ const FlipbookModel = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    status: {
+   status: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: "public",
+      defaultValue: "private",
+    },
+    publicUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {

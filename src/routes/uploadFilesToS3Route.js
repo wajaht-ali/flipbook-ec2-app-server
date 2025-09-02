@@ -5,6 +5,6 @@ import { uploadPdf } from "../controllers/uploadFilesToS3Con.js";
 
 const router = express.Router();
 
-router.post("/", isLoggedIn, upload.single("file"), uploadPdf);
+router.post("/", isLoggedIn, upload.single("pdf"), uploadPdf);
 
 export { router as uploadFilesToS3Route };
