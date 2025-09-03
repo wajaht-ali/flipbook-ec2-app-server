@@ -87,19 +87,23 @@ export const userFilesController = async (req, res) => {
 
 export const singleFileController = async (req, res) => {
   try {
-    const { user_id } = req.params;
+
     const { id } = req.params;
-    const user = await UserModel.findByPk(user_id);
-    if (!user) {
-      return res.status(404).send({
+    const user_id = req.user.id
+    const file = await FlipbookModel.findOne({
+      where: { id },
+    });
+
+
+
+    if (file.userId !== user_id) {
+      return res.status(403).json({
         success: false,
-        message: "No user found",
+        message: "You are not allowed to access this flipbook",
       });
     }
 
-    const file = await FlipbookModel.findOne({
-      where: { id: id },
-    });
+
 
     if (!file || file.length === 0) {
       return res.status(404).json({
@@ -125,7 +129,7 @@ export const singleFileController = async (req, res) => {
 export const fileUpdateController = async (req, res) => {
   try {
     const { user_id, id } = req.params;
-    const { title, description } = req.body;
+    const { title, description, status } = req.body;
 
     const user = await FlipbookModel.findOne({ where: { user_id } });
     if (!user) {
@@ -134,37 +138,39 @@ export const fileUpdateController = async (req, res) => {
         message: "User not found",
       });
     }
-    const file = await FlipbookModel.findOne({ where: { id } });
 
-    if (!file) {
-      return res.status(400).send({
-        success: "false",
-        message: "File not found",
-      });
-    }
-
-    const updatedFile = {};
-    if (title) {
-      updatedFile.title = title;
-    }
-
-    if (description) {
-      updatedFile.description = description;
-    }
-
-    await file.update(updatedFile);
-
-    return res.status(200).send({
-      success: "true",
-      message: "File Updated Successfully",
+    const flipbook = await FlipbookModel.findOne({
+      where: { id, user_id }
     });
-  } catch (error) {
-    return res.status(400).send({
-      success: "false",
-      message: error,
+
+    if (!flipbook) {
+      return res.status(404).json({ success: false, message: "Flipbook not found" });
+    }
+
+    // If making public, generate a public URL
+    if (status === "public") {
+      flipbook.publicUrl = `/public/flipbook/${flipbook.id}`;
+    } else {
+      flipbook.publicUrl = null; // reset
+    }
+
+    flipbook.title = title || flipbook.title;
+    flipbook.description = description || flipbook.description;
+    flipbook.status = status || flipbook.status;
+
+    await flipbook.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Flipbook updated successfully",
+      flipbook
     });
+  } catch (err) {
+    console.error("Update error:", err);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 export const fileDeleteController = async (req, res) => {
   try {
@@ -230,3 +236,22 @@ export const fileDeleteController = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+
+export const PublicFileController = async (req, res) => {
+  try {
+
+    const { id } = req.body;
+    const flipbook = await FlipbookModel.findByPk(id);
+
+    if (!flipbook || flipbook.status !== "public") {
+      return res.status(403).json({ success: false, message: "Flipbook is private" });
+    }
+
+    return res.status(200).json({ success: true, flipbook });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
