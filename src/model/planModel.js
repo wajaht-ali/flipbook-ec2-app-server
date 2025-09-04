@@ -74,6 +74,10 @@ const planModel = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    count: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     freezeTableName: true,
@@ -81,6 +85,7 @@ const planModel = sequelize.define(
     timestamps: false,
   }
 );
+
 
 
 
