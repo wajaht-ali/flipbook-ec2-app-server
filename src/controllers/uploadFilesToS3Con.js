@@ -117,6 +117,7 @@ export const uploadPdf = async (req, res) => {
     return res.status(200).json({
       message: "Upload successful",
       flipbook,
+      updated,
       assets: data,
       url: data.Location,
     });

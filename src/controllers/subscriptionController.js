@@ -18,6 +18,7 @@ export const syncPlansToDb = async () => {
       price_id: price.id,
       price: price.unit_amount ? (price.unit_amount / 100).toString() : "0",
       duration: price.recurring ? price.recurring.interval : "one_time",
+      count: parseInt(price.product.metadata.count, 10),
       createdAt: new Date(),
       updatedAt: new Date(),
     }));
@@ -114,10 +115,25 @@ export const verifyPayment = async (req, res) => {
       purchaseData: new Date().toISOString(),
     });
 
+    
+    const user = await UserModel.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    user.totalCount += plan.count
+    user.remainingCount += plan.count
+    const updated = await user.update({
+      isSubscribe: true,
+      totalCount: user.totalCount,   // Update totalCount
+      remainingCount: user.remainingCount
+    });
+
     return res.status(201).json({
       message: "Payment verified & subscription created",
       subscription,
       history,
+      updated,
     });
   } catch (error) {
     console.error("Error in payment verification:", error);
