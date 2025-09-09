@@ -106,6 +106,8 @@ export const uploadPdf = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
+    user.remainingCount -= 1;
+
     const flipbook = await FlipbookModel.create({
       title: fileTitle || null,
       pdfUrl: data.Location,
@@ -113,10 +115,15 @@ export const uploadPdf = async (req, res) => {
       userId,
     });
 
+    const updated = await user.update({
+      remainingCount: user.remainingCount,
+    });
+    
     // Success response; files will be deleted in finally
     return res.status(200).json({
       message: "Upload successful",
       flipbook,
+      updated,
       assets: data,
       url: data.Location,
     });
@@ -130,7 +137,6 @@ export const uploadPdf = async (req, res) => {
         : "Upload failed";
     return res.status(500).json({ error: "Upload failed", detail: message });
   } finally {
-    
     await cleanup();
   }
 };
