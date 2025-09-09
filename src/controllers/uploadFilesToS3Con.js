@@ -174,6 +174,8 @@ export const uploadPdf = async (req, res) => {
         .status(404)
         .send({ success: false, message: "User not found" });
 
+    user.remainingCount -= 1;
+
     const flipbook = await FlipbookModel.create({
       title: fileTitle || null,
       pdfUrl: data.Location,
@@ -181,9 +183,14 @@ export const uploadPdf = async (req, res) => {
       userId,
     });
 
+    const updated = await user.update({
+      remainingCount: user.remainingCount,
+    });
+
     res.status(200).json({
       message: "Upload successful",
       flipbook,
+      updated,
       assets: data,
       url: data.Location,
     });

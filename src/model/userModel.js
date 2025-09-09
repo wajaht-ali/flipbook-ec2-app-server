@@ -41,6 +41,21 @@ const UserModel = sequelize.define(
       type: DataTypes.DATE,
       allowNull: true,
     },
+    isSubscribe: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    totalCount: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 5,
+    },
+    remainingCount: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 5,
+    },
   },
   {
     freezeTableName: true,
