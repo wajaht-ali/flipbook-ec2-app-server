@@ -12,9 +12,20 @@ import { subscriptionRoute } from "./routes/subscriptionRoute.js";
 
 const app = express();
 
+const allowedOrigins = [
+  "https://flipbook-client.vercel.app",
+  "http://localhost:5173",
+];
+
 app.use(
   cors({
-    origin: "*",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "DELETE", "PUT"],
     credentials: true,
   })
@@ -49,6 +60,6 @@ app.use("/api/v1/upload", uploadFilesToS3Route);
 app.use("/api/v1/replicate", replicateRoute);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/files", filesRoute);
-app.use("/api/v1/subscription",subscriptionRoute)
+app.use("/api/v1/subscription", subscriptionRoute);
 
 export default app;
