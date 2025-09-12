@@ -10,6 +10,9 @@ import { generateEmailTemplate } from "../utils/emailTemplete.js";
 import { generateOTPTemplate } from "../utils/passwordResetTemplete.js";
 import passport from "passport";
 
+import dotenv from "dotenv";
+dotenv.config();
+
 export const registerUserController = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -424,8 +427,8 @@ export const authGoogleController = (req, res, next) => {
 
 export const authGoogleCallBackController = (req, res, next) => {
   passport.authenticate("google", {
-    successRedirect: "http://localhost:8000/api/v1/user/dashboard",
-    failureRedirect: "http://localhost:8000/api/v1/user/login",
+    successRedirect: `${process.env.CLIENT_URL}/user/dashboard`,
+    failureRedirect: `${process.env.CLIENT_URL}/login`,
   })(req, res, next);
 };
 

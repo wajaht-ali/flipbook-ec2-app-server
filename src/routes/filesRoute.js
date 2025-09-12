@@ -4,6 +4,7 @@ import {
   fileDeleteController,
   filesCountController,
   fileUpdateController,
+  ProtectedFileController,
   PublicFileController,
   singleFileController,
   userFilesController,
@@ -26,5 +27,8 @@ router.delete("/delete-file/:user_id/:id", fileDeleteController);
 
 // public route for status public files 
 router.post("/public/flipbook", PublicFileController)
+
+// Protected route - login required
+router.post("/protected/flipbook", isLoggedIn, ProtectedFileController);
 
 export { router as filesRoute };
