@@ -427,7 +427,7 @@ export const authGoogleController = (req, res, next) => {
 
 export const authGoogleCallBackController = (req, res, next) => {
   passport.authenticate("google", {
-    successRedirect: `${process.env.CLIENT_URL}/user/dashboard`,
+    successRedirect: `${process.env.CLIENT_URL}/dashboard/user/books`,
     failureRedirect: `${process.env.CLIENT_URL}/login`,
   })(req, res, next);
 };
