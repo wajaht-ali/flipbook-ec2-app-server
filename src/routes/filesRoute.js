@@ -8,7 +8,7 @@ import {
   PublicFileController,
   singleFileController,
   userFilesController,
-} from "../controllers/fileCoutroller.js";
+} from "../controllers/fileController.js";
 import { isLoggedIn } from "../Middleware/authMIddleware.js";
 
 const router = express.Router();

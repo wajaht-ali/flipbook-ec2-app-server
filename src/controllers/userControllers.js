@@ -426,38 +426,27 @@ export const authGoogleController = (req, res, next) => {
 };
 
 export const authGoogleCallBackController = (req, res, next) => {
-  passport.authenticate("google", {
-    successRedirect: `${process.env.CLIENT_URL}/dashboard/user/books`,
-    failureRedirect: `${process.env.CLIENT_URL}/login`,
-  })(req, res, next);
-};
-
-export const dashboardController = (req, res, next) => {
-  try {
-    if (!req.isAuthenticated() || !req.user) {
-      return res.status(401).send({
-        success: false,
-        message: "Unauthorized. Please log in.",
-      });
+  passport.authenticate("google", { session: false }, async (err, user) => {
+    if (err || !user) {
+      return res.redirect(`${process.env.FRONTEND_URL}/login`);
     }
 
-    const { name, email } = req.user;
+    try {
+      // Create JWT token
+      const token = jwt.sign(
+        { id: user._id || user.id, name: user.name, email: user.email },
+        process.env.JWT_SECRET_KEY,
+        { expiresIn: "1h" }
+      );
 
-    res.send(`ٖ<html>
-      <head><title>Dashboard</title></head>
-      <body>
-        <h1>Welcome, ${name}!</h1>
-        <p>Email: ${email}</p>
-        <a href="/api/v1/user/logout">Logout</a>
-      </body>
-    </html>
-  `);
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: `${error}`,
-    });
-  }
+      // Redirect to frontend with token + user data in query params
+      return res.redirect(
+        `${process.env.CLIENT_URL}/auth/success?token=${token}&id=${user._id || user.id}&role=${user.role}&name=${encodeURIComponent(user.name)}&profileImg=${user.profileImg}&email=${encodeURIComponent(user.email)}`
+      );
+    } catch (error) {
+      return res.redirect(`${process.env.CLIENT_URL}/`);
+    }
+  })(req, res, next);
 };
 
 export const logoutController = (req, res, next) => {

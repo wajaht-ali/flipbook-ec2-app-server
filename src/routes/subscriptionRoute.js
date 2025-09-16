@@ -15,7 +15,6 @@ router.get("/getPlans", getPlans);
 
 router.post("/verify-payment", verifyPayment);
 
-
 router.get("/get-subscription-details", getsubcriptionDetails);
 
 router.post("/get-user-subscription-details", getUserSubscriptionDetails);

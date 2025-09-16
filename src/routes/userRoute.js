@@ -4,7 +4,6 @@ import {
   authGoogleCallBackController,
   authGoogleController,
   changePasswordController,
-  dashboardController,
   deleteUserController,
   loginUserController,
   logoutController,
@@ -46,8 +45,6 @@ router.put("/change-password", changePasswordController);
 router.get("/google", authGoogleController);
 
 router.get("/google/callback", authGoogleCallBackController);
-
-router.get("/dashboard", dashboardController);
 
 router.get("/logout", logoutController);
 
