@@ -180,8 +180,6 @@ export const fileUpdateController = async (req, res) => {
   }
 };
 
-
-
 export const fileDeleteController = async (req, res) => {
   try {
     const { user_id, id } = req.params;
@@ -247,7 +245,6 @@ export const fileDeleteController = async (req, res) => {
   }
 };
 
-
 export const PublicFileController = async (req, res) => {
   try {
 
@@ -263,8 +260,6 @@ export const PublicFileController = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
-
 
 export const ProtectedFileController = async (req, res) => {
   try {
