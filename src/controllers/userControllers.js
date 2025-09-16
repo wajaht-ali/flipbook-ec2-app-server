@@ -441,7 +441,7 @@ export const authGoogleCallBackController = (req, res, next) => {
 
       // Redirect to frontend with token + user data in query params
       return res.redirect(
-        `${process.env.CLIENT_URL}/auth/success?token=${token}&id=${user._id || user.id}&role=${user.role}&name=${encodeURIComponent(user.name)}&profileImg=${user.profileImg}&email=${encodeURIComponent(user.email)}`
+        `${process.env.CLIENT_URL}/auth/success?token=${token}&id=${user._id || user.id}&role=${user.role}&name=${encodeURIComponent(user.name)}&profileImg=${user.profileImg}&remainingCount=${user.remainingCount}&email=${encodeURIComponent(user.email)}`
       );
     } catch (error) {
       return res.redirect(`${process.env.CLIENT_URL}/`);
