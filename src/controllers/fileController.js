@@ -3,6 +3,9 @@ import FlipbookModel from "../model/flipbookModel.js";
 import FlipbookPermissionModel from "../model/flipbookPermissionModel.js";
 import s3 from "../config/s3.js";
 import config from "../config/config.js";
+import { generateShareEmailTemplate } from "../utils/shareFlipbookEmailTemplate.js";
+import sendMail from "../utils/sendEmail.js";
+
 
 export const allFilesController = async (req, res) => {
   try {
@@ -130,7 +133,8 @@ export const singleFileController = async (req, res) => {
 export const fileUpdateController = async (req, res) => {
   try {
     const { user_id, id } = req.params;
-    const { title, description, status, email } = req.body; // 👈 single email
+    const { title, description, status, email, url } = req.body;
+    
 
     // check flipbook
     const flipbook = await FlipbookModel.findOne({
@@ -154,7 +158,7 @@ export const fileUpdateController = async (req, res) => {
 
     await flipbook.save();
 
-    // handle protected (single email)
+    // handle protected (send email)
     if (status === "protected") {
       if (!email) {
         return res.status(400).json({
@@ -167,6 +171,45 @@ export const fileUpdateController = async (req, res) => {
         flipbookId: id,
         email,
       });
+
+     
+
+      // build flipbook URL
+      const flipbookUrl = `${url}/${id}`;
+
+      // find sender info
+      const sender = await UserModel.findOne({ where: { id: user_id } });
+      const senderName = sender ? sender.name : "Someone";
+      
+      // generate email HTML
+      const shareEmail = generateShareEmailTemplate(
+        senderName,
+        null, // no receiver name
+        flipbookUrl
+      );
+
+      // send email
+
+
+
+      const mailResult = await sendMail(
+        email,
+        "📖 A Flipbook Has Been Shared With You",
+        shareEmail
+      );
+
+      if (!mailResult.success) {
+        console.error("❌ Email sending failed:", mailResult.error);
+
+        return res.status(500).json({
+          success: false,
+          message: "Email not sent",
+          error: mailResult.error,
+        });
+      } else {
+        console.log("✅ Email sent successfully:", mailResult.messageId);
+      }
+
     }
 
     return res.status(200).json({
@@ -179,6 +222,7 @@ export const fileUpdateController = async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 export const fileDeleteController = async (req, res) => {
   try {
